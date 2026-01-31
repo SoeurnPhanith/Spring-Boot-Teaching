@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -67,7 +66,29 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public ResponseEntity<ApiResponse<Employee>> updateEmployee(Employee emp, Long id) {
-        return null;
+        //1.find employee by id
+        Optional<Employee> findEmp = empRepo.findById(id);
+        if(!findEmp.isPresent()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse<>(
+                    "get employee id " + id + " not found ",
+                    404, null
+            ));
+        }
+
+        //2. get data found to update
+        Employee update = findEmp.get();
+        update.setName(emp.getName());
+        update.setEmail(emp.getEmail());
+        update.setGender(emp.getGender());
+        update.setPosition(emp.getPosition());
+        update.setSalary(emp.getSalary());
+
+        //3. Save data updated to db
+        Employee saved = empRepo.save(update);
+        return ResponseEntity.ok().body(new ApiResponse<>(
+                "update resource success",
+                200, update
+        ));
     }
 
     @Override

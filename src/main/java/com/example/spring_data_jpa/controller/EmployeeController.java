@@ -30,4 +30,12 @@ public class EmployeeController {
     public ResponseEntity<ApiResponse<Optional<Employee>>> findEmployeeById(@PathVariable Long id){
         return service.findEmployeeById(id);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<Employee>> updateEmployee(
+           @RequestBody Employee employee ,
+           @PathVariable Long id
+    ){
+        return service.updateEmployee(employee, id);
+    }
 }
