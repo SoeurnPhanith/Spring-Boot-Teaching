@@ -28,6 +28,50 @@ public class EmployeeServiceImpl implements EmployeeService {
             ));
         }
 
+        //2. validate on column name
+        if(emp.getName().isBlank() || emp.getName().isEmpty()){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse<>(
+                    "name is required", 400, null
+            ));
+        }
+        if(!emp.getName().matches("^[a-zA-Z ]+$")){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse<>(
+                    "name must be only character", 400, null
+            ));
+        }
+        if(emp.getName().length() < 5){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse<>(
+                    "name should be more than 5 character", 400, null
+            ));
+        }
+
+        //3. validate on column gender
+        if(emp.getGender().isEmpty() || emp.getGender().isBlank()){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse<>(
+                    "gender is required", 400, null
+            ));
+        }
+        if(
+                !(emp.getGender().equalsIgnoreCase("male") ||
+                emp.getGender().equalsIgnoreCase("female"))
+        ){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse<>(
+                    "gender is only male | female", 400, null
+            ));
+        }
+
+        //4. validate on email
+        if(emp.getEmail().isBlank() || emp.getEmail().isEmpty()){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse<>(
+                    "email is required", 400, null
+            ));
+        }
+        if(emp.getEmail().matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse<>(
+                    "Invalid email ! so email must be email", 400, null
+
+            ));
+        }
         Employee addEmp = empRepo.save(emp);
         return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse<>(
                 "created new resource success", 201, addEmp
