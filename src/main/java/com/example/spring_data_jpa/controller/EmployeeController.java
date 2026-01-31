@@ -5,12 +5,10 @@ import com.example.spring_data_jpa.entity.Employee;
 import com.example.spring_data_jpa.service.impl.EmployeeServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class EmployeeController {
@@ -26,5 +24,10 @@ public class EmployeeController {
     @PostMapping
     public ResponseEntity<ApiResponse<Employee>> createEmployee(@RequestBody Employee employee){
         return service.createEmployee(employee);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<Optional<Employee>>> findEmployeeById(@PathVariable Long id){
+        return service.findEmployeeById(id);
     }
 }

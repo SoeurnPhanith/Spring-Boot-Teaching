@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
@@ -29,7 +30,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
         Employee addEmp = empRepo.save(emp);
-
         return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse<>(
                 "created new resource success", 201, addEmp
         ));
@@ -48,5 +48,30 @@ public class EmployeeServiceImpl implements EmployeeService {
                             getAll
                     )
             );
+    }
+
+    @Override
+    public ResponseEntity<ApiResponse<Optional<Employee>>> findEmployeeById(Long id) {
+        //1. get data from db by id
+        Optional<Employee> find = empRepo.findById(id);
+        if(!find.isPresent()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse<>(
+                    "get employee id " + id + " not found ",
+                    404, null
+            ));
+        }
+        return ResponseEntity.ok().body(new ApiResponse<>(
+                "success", 200, find
+        ));
+    }
+
+    @Override
+    public ResponseEntity<ApiResponse<Employee>> updateEmployee(Employee emp, Long id) {
+        return null;
+    }
+
+    @Override
+    public ResponseEntity<ApiResponse<String>> removeEmployee(Long id) {
+        return null;
     }
 }

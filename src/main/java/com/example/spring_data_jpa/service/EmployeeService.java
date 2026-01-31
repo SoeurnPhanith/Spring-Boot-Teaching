@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public interface EmployeeService {
@@ -14,5 +15,9 @@ public interface EmployeeService {
 
     ResponseEntity<ApiResponse<List<Employee>>> showAll();
 
+    ResponseEntity<ApiResponse<Optional<Employee>>> findEmployeeById(Long id);
 
+    ResponseEntity<ApiResponse<Employee>> updateEmployee(Employee emp , Long id);
+
+    ResponseEntity<ApiResponse<String>> removeEmployee(Long id);
 }
