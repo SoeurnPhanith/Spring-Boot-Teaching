@@ -38,4 +38,9 @@ public class EmployeeController {
     ){
         return service.updateEmployee(employee, id);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<String>> remove(@PathVariable Long id){
+        return service.removeEmployee(id);
+    }
 }

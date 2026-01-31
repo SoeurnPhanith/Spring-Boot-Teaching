@@ -93,6 +93,19 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public ResponseEntity<ApiResponse<String>> removeEmployee(Long id) {
-        return null;
+        //1.find employee by id
+        Optional<Employee> findEmp = empRepo.findById(id);
+        if(!findEmp.isPresent()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse<>(
+                    "get employee id " + id + " not found ",
+                    404, null
+            ));
+        }
+
+        empRepo.deleteById(id);
+        return ResponseEntity.ok().body(new ApiResponse<>(
+                "delete success",
+                200, "done"
+        ));
     }
 }
