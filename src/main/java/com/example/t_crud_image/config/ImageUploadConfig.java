@@ -11,7 +11,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @Configuration
-
 public class ImageUploadConfig {
 
     @Value("${spring.upload-dir}")
@@ -21,11 +20,13 @@ public class ImageUploadConfig {
     public Path uploadPath(){
         Path path = Paths.get(System.getProperty("user.dir"), uploadDir);
         if(!Files.exists(path)){
+
             try {
                 Files.createDirectories(path);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
+
         }
 
         return path;

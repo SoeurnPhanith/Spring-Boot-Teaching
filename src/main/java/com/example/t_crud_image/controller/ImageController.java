@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 public class ImageController {
@@ -21,6 +22,30 @@ public class ImageController {
            @RequestParam("images") MultipartFile file
     )throws IOException {
         return imageService.uploadImages(image, file);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ImageEntity>> showAllImages(){
+        return imageService.viewAllImages();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ImageEntity> findImageById(@PathVariable Long id){
+        return imageService.findImageById(id);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ImageEntity> updateImageById(
+            @ModelAttribute ImageEntity image,
+            @PathVariable Long id,
+            @RequestParam("image") MultipartFile file
+    ) throws IOException{
+        return imageService.updateImagesById(image, id, file);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> removeImage(@PathVariable Long id){
+        return imageService.removeById(id);
     }
 
 }
