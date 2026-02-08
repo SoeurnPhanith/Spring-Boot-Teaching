@@ -49,7 +49,7 @@ public class UserServiceImpl implements UserService {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse<>(
                     false,"email is required",null
             ));
-        }boolean existsUser = userRepository.existsByEmail(user.getEmail());
+        }
         if(existsUser){
             return ResponseEntity.status(HttpStatus.CONFLICT).body(new ApiResponse<>(
                     false,"user already register", null
