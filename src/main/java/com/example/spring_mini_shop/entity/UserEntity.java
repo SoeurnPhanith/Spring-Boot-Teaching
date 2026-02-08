@@ -1,5 +1,6 @@
 package com.example.spring_mini_shop.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,6 +24,7 @@ public class UserEntity {
 
     private String password;
 
+    @JsonBackReference
     @ManyToOne //many use having one role
     @JoinColumn(name = "role_id")
     private RoleEntity role;

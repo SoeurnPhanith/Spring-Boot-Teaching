@@ -1,5 +1,6 @@
 package com.example.spring_mini_shop.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,6 +21,7 @@ public class RoleEntity {
 
     private String name;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "role")
     private List<UserEntity> user;
 }
