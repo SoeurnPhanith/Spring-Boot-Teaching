@@ -9,6 +9,8 @@ import com.example.spring_mini_shop.utils.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -41,7 +43,24 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public ResponseEntity<ApiResponse<List<CategoryResponseDto>>> viewAllCategory() {
-        return null;
+        List<CategoryEntity> allCategory = categoryRepository.findAll();
+        if(allCategory.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    new ApiResponse<>(false,"no record", null)
+            );
+        }
+
+        //map data from entity -> dto
+        List<CategoryResponseDto> dtoList = new ArrayList<>();
+        for(CategoryEntity c : allCategory){
+            CategoryResponseDto dto = new CategoryResponseDto();
+            dto.setId(c.getId());
+            dto.setName(c.getName());
+
+            //add to dtoLis
+            dtoList.add(dto);
+        }
+        return ResponseEntity.ok().body(new ApiResponse<>(true,"success",dtoList));
     }
 
     @Override

@@ -1,5 +1,7 @@
 package com.example.spring_mini_shop.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,6 +22,7 @@ public class CategoryEntity {
 
     private String name;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "category")
     private List<ProductEntity> product;
 }

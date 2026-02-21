@@ -5,10 +5,9 @@ import com.example.spring_mini_shop.dto.response_dto.CategoryResponseDto;
 import com.example.spring_mini_shop.service.impl.CategoryServiceImpl;
 import com.example.spring_mini_shop.utils.ApiResponse;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/mini-shop/category")
@@ -23,6 +22,11 @@ public class CategoryController {
     @PostMapping
     public ResponseEntity<ApiResponse<CategoryResponseDto>> addCategory(@RequestBody CategoryRequestDto category){
         return categoryService.addCategory(category);
+    }
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<CategoryResponseDto>>> allCategory(){
+        return categoryService.viewAllCategory();
     }
 
 }
