@@ -4,6 +4,8 @@ import com.example.spring_mini_shop.dto.request_dto.ProductRequestDto;
 import com.example.spring_mini_shop.dto.response_dto.ProductResponseDto;
 import com.example.spring_mini_shop.entity.CategoryEntity;
 import com.example.spring_mini_shop.entity.ProductEntity;
+import com.example.spring_mini_shop.exception.DuplicateValueException;
+import com.example.spring_mini_shop.exception.ResourceNotFoundException;
 import com.example.spring_mini_shop.repo.CategoryRepository;
 import com.example.spring_mini_shop.repo.ProductRepository;
 import com.example.spring_mini_shop.service.ProductService;
@@ -36,13 +38,11 @@ public class ProductServiceImpl implements ProductService {
         //check exists product
         boolean existsProduct = productRepository.existsByName(dto.getName());
         if(existsProduct){
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(new ApiResponse<>(
-                    false, "this product already exists", null
-            ));
+           throw new DuplicateValueException("Product name already exists");
         }
         //find category
         CategoryEntity findById = categoryRepository.findById(dto.getCategory()).
-                orElseThrow(()->new RuntimeException("not found"));
+                orElseThrow(()->new ResourceNotFoundException("category not found"));
 
         //map data from request dto -> entity
         ProductEntity entity = new ProductEntity();

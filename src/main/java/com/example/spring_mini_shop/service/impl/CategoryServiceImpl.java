@@ -3,6 +3,8 @@ package com.example.spring_mini_shop.service.impl;
 import com.example.spring_mini_shop.dto.request_dto.CategoryRequestDto;
 import com.example.spring_mini_shop.dto.response_dto.CategoryResponseDto;
 import com.example.spring_mini_shop.entity.CategoryEntity;
+import com.example.spring_mini_shop.exception.DuplicateValueException;
+import com.example.spring_mini_shop.exception.ResourceNotFoundException;
 import com.example.spring_mini_shop.repo.CategoryRepository;
 import com.example.spring_mini_shop.service.CategoryService;
 import com.example.spring_mini_shop.utils.ApiResponse;
@@ -24,6 +26,10 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public ResponseEntity<ApiResponse<CategoryResponseDto>> addCategory(CategoryRequestDto category) {
+        boolean exists = categoryRepository.existsByName(category.getName());
+        if(exists){
+            throw new DuplicateValueException("category name already exists");
+        }
         //map data from request dto -> entity
         CategoryEntity entity = new CategoryEntity();
         entity.setName(category.getName());
@@ -45,11 +51,8 @@ public class CategoryServiceImpl implements CategoryService {
     public ResponseEntity<ApiResponse<List<CategoryResponseDto>>> viewAllCategory() {
         List<CategoryEntity> allCategory = categoryRepository.findAll();
         if(allCategory.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                    new ApiResponse<>(false,"no record", null)
-            );
+            throw new ResourceNotFoundException("category not found");
         }
-
         //map data from entity -> dto
         List<CategoryResponseDto> dtoList = new ArrayList<>();
         for(CategoryEntity c : allCategory){
