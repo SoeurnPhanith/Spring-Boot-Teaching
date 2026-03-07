@@ -1,7 +1,10 @@
 package com.example.spring_mini_shop.service.impl;
 
+import com.example.spring_mini_shop.dto.request_dto.UserRequestDto;
+import com.example.spring_mini_shop.dto.response_dto.UserResponseDto;
 import com.example.spring_mini_shop.entity.RoleEntity;
 import com.example.spring_mini_shop.entity.UserEntity;
+import com.example.spring_mini_shop.exception.ResourceNotFoundException;
 import com.example.spring_mini_shop.repo.RoleRepository;
 import com.example.spring_mini_shop.repo.UserRepository;
 import com.example.spring_mini_shop.service.UserService;
@@ -23,7 +26,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<ApiResponse<UserEntity>> register(UserEntity user) {
+    public ResponseEntity<ApiResponse<?>> register(UserRequestDto user) {
         //check exists user
         boolean existsUser = userRepository.existsByEmail(user.getEmail());
         if(existsUser){
@@ -31,70 +34,25 @@ public class UserServiceImpl implements UserService {
                     false,"user already register", null
             ));
         }
-
-        //validate on username
-        if(user.getUsername().isEmpty() || user.getUsername().isEmpty()){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse<>(
-                    false,"username is required",null
-            ));
-        }
-        if(!user.getUsername().matches("^[a-zA-Z ]+$")){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse<>(
-                    false,"username must be character",null
-            ));
-        }
-
-        //validate on email
-        if(user.getEmail().isEmpty() || user.getEmail().isEmpty()){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse<>(
-                    false,"email is required",null
-            ));
-        }
-        if(existsUser){
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(new ApiResponse<>(
-                    false,"user already register", null
-            ));
-        }
-
-        //validate on userna
-        if(!user.getEmail().matches("^[a-zA-Z0-9]+@[a-zA-Z0-9]+\\.(com|edu|gov|org)\\.kh$\n")){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                    new ApiResponse<>(false,"email must be email", null)
-            );
-        }
-
-        //validate on password
-        if(user.getPassword().isEmpty() || user.getPassword().isEmpty()){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse<>(
-                    false,"password is required",null
-            ));
-        }
-        if (!user.getPassword().matches(
-                "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@$!%*?&#])[A-Za-z\\d@$!%*?&#]{8,}$"
-        )) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ApiResponse<>(
-                            false,
-                            "Password must be at least 8 characters and include 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character.",
-                            null
-                    ));
-        }
-
         //get role from role table(db)
-        Optional<RoleEntity> findRole = roleRepo.findByName("ROLE_USER");
-        if(!findRole.isPresent()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                    new ApiResponse<>(false,"role user not found", null)
-            );
-        }
-        //get data to normal object
-        RoleEntity getRole = findRole.get();
+        RoleEntity findRole = roleRepo.findByName("ROLE_USER").orElseThrow(
+                ()-> new ResourceNotFoundException("Role not found!")
+        );
+        //map data from dto->entity
+        UserEntity entity = new UserEntity();
+        entity.setUsername(user.getUsername());
+        entity.setEmail(user.getEmail());
+        entity.setPassword(user.getPassword());
+        entity.setRole(findRole);
+        UserEntity save = userRepository.save(entity);
 
-        //assign default role
-        user.setRole(getRole);
-        UserEntity save = userRepository.save(user);
+        //map from entity -> dto
+        UserResponseDto dto = new UserResponseDto();
+        dto.setId(save.getId());
+        dto.setUsername(save.getUsername());
+        dto.setEmail(save.getEmail());
         return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse<>(
-                true,"user register successful",save
+                true,"user register successful",dto
         ));
     }
 }

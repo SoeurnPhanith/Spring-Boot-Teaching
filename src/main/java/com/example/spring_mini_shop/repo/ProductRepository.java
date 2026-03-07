@@ -9,4 +9,5 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
 
     boolean existsByName(String name);
 
+
 }

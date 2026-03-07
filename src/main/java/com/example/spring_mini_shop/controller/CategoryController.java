@@ -4,6 +4,7 @@ import com.example.spring_mini_shop.dto.request_dto.CategoryRequestDto;
 import com.example.spring_mini_shop.dto.response_dto.CategoryResponseDto;
 import com.example.spring_mini_shop.service.impl.CategoryServiceImpl;
 import com.example.spring_mini_shop.utils.ApiResponse;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,6 +28,28 @@ public class CategoryController {
     @GetMapping
     public ResponseEntity<ApiResponse<List<CategoryResponseDto>>> allCategory(){
         return categoryService.viewAllCategory();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<CategoryResponseDto>> findCategoryById(
+            @Valid @PathVariable Long id
+    ){
+        return categoryService.findCategoryById(id);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<CategoryResponseDto>> updateCategory(
+            @Valid @RequestBody CategoryRequestDto dto,
+            @Valid @PathVariable Long id
+    ){
+        return categoryService.updateCategory(dto, id);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<String>> deleteCategory(
+            @Valid @PathVariable Long id
+    ){
+        return categoryService.deleteCategory(id);
     }
 
 }

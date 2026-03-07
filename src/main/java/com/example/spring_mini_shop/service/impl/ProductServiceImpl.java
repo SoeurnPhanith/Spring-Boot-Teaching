@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -68,7 +69,7 @@ public class ProductServiceImpl implements ProductService {
         ProductResponseDto response = new ProductResponseDto();
         response.setId(saved.getId());
         response.setName(saved.getName());
-        response.setCategory(saved.getCategory());
+        response.setCategory(saved.getCategory().getName());
         response.setPrice(saved.getPrice());
         response.setImageUrl(saved.getImageUrl());
         response.setCreatedAt(saved.getCreatedAt());
@@ -77,5 +78,95 @@ public class ProductServiceImpl implements ProductService {
         return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse<>(
                 true, "create new resource", response
         ));
+    }
+
+    @Override
+    public ResponseEntity<ApiResponse<List<ProductResponseDto>>> allProducts() {
+
+        List<ProductResponseDto> dtoList = productRepository.findAll()
+                .stream()
+                .map(p -> new ProductResponseDto(
+                        p.getId(),
+                        p.getName(),
+                        p.getCategory().getName(),
+                        p.getPrice(),
+                        p.getImageUrl(),
+                        p.getUpdatedAt(),
+                        p.getCreatedAt()
+                ))
+                .toList();
+
+        if (dtoList.isEmpty()) {
+            throw new ResourceNotFoundException("Product not found");
+        }
+
+        return ResponseEntity.ok(
+                new ApiResponse<>(true, "success", dtoList)
+        );
+    }
+
+    @Override
+    public ResponseEntity<ApiResponse<ProductResponseDto>> findProductById(Long id) {
+        ProductResponseDto dto = productRepository.findById(id)
+                .map(p->new ProductResponseDto(
+                        p.getId(),
+                        p.getName(),
+                        p.getCategory().getName(),
+                        p.getPrice(),
+                        p.getImageUrl(),
+                        p.getUpdatedAt(),
+                        p.getCreatedAt()
+                )).orElseThrow(()->new ResourceNotFoundException("product not found"));
+
+        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse<>(true,"success", dto));
+    }
+
+    @Override
+    public ResponseEntity<ApiResponse<ProductResponseDto>> updateProduct(ProductRequestDto dto, MultipartFile file, Long id) throws IOException {
+
+        ProductEntity find = productRepository.findById(id).orElseThrow(
+                ()->new ResourceNotFoundException("product not found!"));
+
+        boolean existsProduct = productRepository.existsByName(dto.getName());
+        if(existsProduct){
+            throw new DuplicateValueException("Product name already exists");
+        }
+
+        //find category
+        CategoryEntity findById = categoryRepository.findById(dto.getCategory()).
+                orElseThrow(()->new ResourceNotFoundException("category not found"));
+
+        // map data from dto -> entity
+        find.setName(dto.getName());
+        find.setCategory(findById);
+        find.setPrice(dto.getPrice());
+        if(file!=null){
+            String fileName = UUID.randomUUID()+ "_" + file.getOriginalFilename();
+
+            //set image to root directory
+            Path filePath = uploadPath.resolve(fileName);
+            file.transferTo(filePath);
+
+            String http = "http://localhost:8080";
+            find.setImageUrl(http + "/uploads/" + fileName );
+        }
+        //save to db
+        ProductEntity saved = productRepository.save(find);
+
+        //map data entity -> response DTO
+        ProductResponseDto response = new ProductResponseDto();
+        response.setId(saved.getId());
+        response.setName(saved.getName());
+        response.setCategory(saved.getCategory().getName());
+        response.setPrice(saved.getPrice());
+        response.setImageUrl(saved.getImageUrl());
+        response.setCreatedAt(saved.getCreatedAt());
+        response.setUpdatedAt(saved.getUpdatedAt());
+        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse<>(true,"update success", response));
+    }
+
+    @Override
+    public ResponseEntity<ApiResponse<?>> deleteProducts(Long id) {
+        return null;
     }
 }

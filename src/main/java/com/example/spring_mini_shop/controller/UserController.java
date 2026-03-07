@@ -1,8 +1,10 @@
 package com.example.spring_mini_shop.controller;
 
+import com.example.spring_mini_shop.dto.request_dto.UserRequestDto;
 import com.example.spring_mini_shop.entity.UserEntity;
 import com.example.spring_mini_shop.service.impl.UserServiceImpl;
 import com.example.spring_mini_shop.utils.ApiResponse;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,7 +22,9 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse<UserEntity>> register(@RequestBody UserEntity user){
+    public ResponseEntity<ApiResponse<?>> register(
+            @Valid @RequestBody UserRequestDto user
+    ){
        return userService.register(user);
     }
 

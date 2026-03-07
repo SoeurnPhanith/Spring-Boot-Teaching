@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @Service
 public interface ProductService {
@@ -15,5 +16,10 @@ public interface ProductService {
     ResponseEntity<ApiResponse<ProductResponseDto>> addProduct(
             ProductRequestDto dto , MultipartFile file
     ) throws IOException;
-
+    ResponseEntity<ApiResponse<List<ProductResponseDto>>> allProducts();
+    ResponseEntity<ApiResponse<ProductResponseDto>> findProductById(Long id);
+    ResponseEntity<ApiResponse<ProductResponseDto>> updateProduct(
+            ProductRequestDto dto, MultipartFile file, Long id
+    )throws IOException;
+    ResponseEntity<ApiResponse<?>> deleteProducts(Long id);
 }
