@@ -6,9 +6,12 @@ import com.example.spring_mini_shop.utils.ApiResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public interface UserService {
 
     ResponseEntity<ApiResponse<?>> register(UserRequestDto user);
+
 
 }
